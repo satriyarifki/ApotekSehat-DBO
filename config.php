@@ -1,6 +1,5 @@
 <?php
-/* Database credentials. Assuming you are running MySQL
-server with default setting (user 'root' with no password) */
+
 $hostname = "localhost";
 $username = "root";
 $password = "";
@@ -10,7 +9,6 @@ define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_NAME', 'apoteksehat');
  
-/* Attempt to connect to MySQL database */
 $link = mysqli_connect($hostname, $username, $password, $database);
  
 // Check connection

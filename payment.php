@@ -16,14 +16,14 @@ $getobat = mysqli_query($link, $query);
 $chekk = mysqli_num_rows($getobat);
 
 // Define variables and initialize with empty values
-$firstname = $lastname =  $address =  $medic = $sum = "";
-$firstname_err = $lastname_err =  $addressr_err = "";
+$firstname = $lastname =  $address =  $kd_obat = $sum = "";
+$firstname_err = $kd_obat_err =  $sum_err = "";
 $status = "belum sukses"; 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
  
     if(empty(trim($_POST["firstname"]))){
-        $firstname_err = "Please enter firstname.";
+        $firstname_err = "Tolong Masukkan Nama Pemesan.";
     } else{
         $firstname = trim($_POST["firstname"]);
     }
@@ -40,9 +40,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty(trim($_POST["phone"]))){
         $phone_err = "Tolong input Nomor Telepon.";
     } elseif(!preg_match('/^[0-9_]+$/', trim($_POST["phone"]))){
-        $phone_err = "Username can only contain numbers";
+        $phone_err = "Harus berisi angka";
     } elseif(strlen(trim($_POST["phone"])) < 11){
-        $phone_err = "Password must have atleast 11 characters.";
+        $phone_err = "Minimal harus tediri dari 11 karakter";
     } else{
         $phone = trim($_POST["phone"]);
     }
@@ -53,13 +53,14 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $address = trim($_POST["address"]);
     }
-    $harga = "SELECT harga_obat FROM obat WHERE kode_obat = '$kd_obat'";
+    $harga = "SELECT nama_obat, harga_obat FROM obat WHERE kode_obat = '$kd_obat'";
     $con = mysqli_fetch_assoc(mysqli_query($link, $harga));
-    $har = $con['harga_obat'];
-    $total =  (int)$har * (int)$sum;
-    // Validate credentials
-    if(empty($firstname_err) && empty($address_err)){
-        // Prepare a select statement
+    
+    
+    if(empty($firstname_err) && empty($address_err) && empty($phone_err)){
+        $har = $con['harga_obat'];
+        $nam = $con['nama_obat'];
+        $total =  (int)$har * (int)$sum;
         $status = "mencoba";
         $id_u = $_SESSION["id_user"];
         $sql = "INSERT INTO pembeli (id_user, nama_pembeli, nohp_pembeli, alamat) VALUES ('$id_u', '$firstname', '$phone', '$address')";
@@ -102,26 +103,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <!-- <link href="/css/product.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="css/form-validation.css">
 </head>
-<body id="body-pd">
+<body id="body-pd" style="padding-bottom: 40px;">
     <header class="header" id="header">
         <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
-        <div class="header_img"> <img src="https://cdn.kibrispdr.org/data/logo-apotik-vector-1.jpg" alt=""> </div>
+        <div class="header_img"> <img src="img/apotek.jpeg" alt=""> </div>
     </header>
     <div class="l-navbar" id="nav-bar">
       <nav class="nav">
         <div> <a href="#" class="nav_logo"> <span class="material-icons">health_and_safety
             </span> <span class="nav_logo-name">Apotek Sehat</span> </a>
             <div class="nav_list"> <a href="base.html" class="nav_link "> <span class="material-icons">grid_view </span> <span class="nav_name">Dashboard</span> </a> 
-                <!-- <a href="#" class="nav_link"> 
-                    <i class='bx bx-user nav_icon'></i> <span class="nav_name">Users</span> </a>  -->
                 <a href="med.html" class="nav_link"> 
                     <span class="material-icons">medication</span></i> <span class="nav_name">Medicine</span> </a> 
                 <a href="payment.php" class="nav_link active"> 
                     <span class="material-icons">payments</span> <span class="nav_name">Payment</span> </a> 
-                  <!-- <a href="#" class="nav_link"> 
-                      <i class='bx bx-folder nav_icon'></i> <span class="nav_name">Files</span> </a> 
-                <a href="#" class="nav_link"> 
-                    <i class='bx bx-bar-chart-alt-2 nav_icon'></i> <span class="nav_name">Stats</span> </a> -->
             </div>
         </div> <a href="logout.php" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">SignOut</span> </a>
       </nav>
@@ -130,15 +125,32 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <div class="container mb-auto" >
       <div class="py-3"></div>
         <div class="py-5 text-center ">
-            <h2>Payment form</h2>
-            <p class="lead">halaman pembayaran</p>
+            <h2>Order form</h2>
+            <p class="lead">Halaman Pemesanan</p>
         </div>
         <!-- <?php echo $_SESSION['username']; 
               echo $status;
               echo $firstname;
               echo $id_pem;?> -->
+        <div class="d-flex justify-content-center">
+        <?php
+        if ($status == "lewat") { ?>
+          <div class="alert alert-info alert-dissmisable fade show w-50 " role="alert">
+            <h4><Strong> Pemesanan Sukses!!!</Strong></h4> <br>
+            <h6> Nama Pemesan      :  <?php echo $firstname ?> </h6>
+            <h6> Alamat Pemesan    :  <?php echo $address ?> </h6>
+            <h6> Obat yang dibeli  :  <?php echo $nam ?> </h6>
+            <h6> Jumlah Obat       :  <?php echo $sum?> </h6>
+            <h6> Total Harga       : Rp<?php echo $total ?> </h6>
+            <hr>
+            <p>* Tunggu sekitar 10 menit, pesanan anda akan sampai!</p>
+            <hr>
+            <button type="button" class="btn-close position-absolute top-0 end-0 p-3" data-bs-dismiss="alert" aria-label="Close" ></button>
+          </div>
+        <?php } ?>
+        </div>
         <div class="container d-flex justify-content-center">
-          <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+          <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" name="formpay" >
               <h4 class=" align-items-center mb-3 d-flex justify-content-center">
                 <span class="text-primary">Your cart</span>
               </h4>
@@ -146,20 +158,22 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <li class="list-group-item d-flex justify-content-center">
                   <div style="width: 400px">
                     <h6 class="my-0">Nama Obat</h6>
-                    <Select name="pilihobat" class="form-select">
+                    <Select name="pilihobat" class="form-select <?php echo (!empty($kd_obat_err)) ? 'is-invalid' : ''; ?>">
                       <option disabled selected>Pilih Obat</option>
                       <?php while($row1 = mysqli_fetch_array($getobat)):;?>
                       <option value="<?php echo $row1[0]?>"><?php echo $row1[1];?></option>
                       <?php endwhile;?>
                     </Select>
+                    <span class="invalid-feedback"><?php echo $kd_obat_err ?></span>
                     <br>
                     <h6 class="my-0">Jumlah Obat </h6>
-                    <select name="jumlah" class="form-select" aria-label=".form-select-sm example">
-                      <option disabled selected>Pilih Jumlah</option>
-                      <option value="1">Satu</option>
-                      <option value="2">Dua</option>
-                      <option value="3">Tiga</option>
-                    </select>
+                    <Select name="jumlah" class="form-select <?php echo (!empty($sum_err)) ? 'is-invalid' : ''; ?>">
+                      <option disabled selected value="">0</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                    </Select>
+                    <span class="invalid-feedback"><?php echo $sum_err ?></span>
                   </div>
                 </li>
               </ul>
@@ -168,7 +182,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 <div class="row g-3">
                   <div class="col-sm-12">
                     <label for="firstName" class="form-label">Name</label>
-                    <input type="text" class="form-control" name="firstname" id="firstname" placeholder="Masukkan Nama" value="" required>
+                    <input type="text" class="form-control " name="firstname" id="firstname" placeholder="Masukkan Nama" value="" required>
                     <div class="invalid-feedback">
                       Nama Wajib Dimasukkan
                     </div>
@@ -177,9 +191,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                   <div class="col-12">
                     <label for="username" class="form-label">Phone Number</label>
                     <div class="">
-                      <input type="text" class="form-control" name="phone" id="phone" placeholder="Masukkan Nomor Telepon" required>
+                      <input type="text" class="form-control <?php echo (!empty($phone_err)) ? 'is-invalid' : ''; ?>" name="phone" id="phone" placeholder="Masukkan Nomor Telepon" required>
                     <div class="invalid-feedback">
-                        Nomor Telepon wajib dimasukkan
+                        <?php echo $phone_err ?>
                       </div>
                     </div>
                   </div>
@@ -204,7 +218,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 </div>
                 <hr class="my-4">
             </div>
-            <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+            <button class="w-100 btn btn-primary btn-lg" type="submit" >Continue to checkout</button>
             <br>
           </form>
         </div>
@@ -216,5 +230,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <script src="js/form-validation.js"></script>
     <script src="js/side.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    
 </body>
 </html>
