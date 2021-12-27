@@ -91,9 +91,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         <?php 
         if(!empty($login_err)){
             echo '<div class="alert alert-danger">' . $login_err . '</div>';
-            echo $hashed_password;
-            echo " ";
-            echo $password;
         }        
         ?>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
