@@ -39,13 +39,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } elseif(strlen(trim($_POST["password"])) < 6){
         $password_err = "Password must have atleast 6 characters.";
     } else{
-        $password = trim($_POST["password"]);
+        $password = trim(md5($_POST["password"], FALSE));
     }
 
     if(empty(trim($_POST["confirm_password"]))){
         $confirm_password_err = "Please confirm password.";     
     } else{
-        $confirm_password = trim($_POST["confirm_password"]);
+        $confirm_password = trim(md5($_POST["confirm_password"], FALSE));
         if(empty($password_err) && ($password != $confirm_password)){
             $confirm_password_err = "Password did not match.";
         }
@@ -58,7 +58,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         if($stmt = mysqli_prepare($link, $sql)){
             mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
             $param_username = $username;
-            $param_password = password_hash(md5($password), PASSWORD_DEFAULT); // Creates a password hash
+            $param_password = $password; // Creates a password hash
             
             if(mysqli_stmt_execute($stmt)){
                 header("location: login.php");
@@ -107,12 +107,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             </div>    
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
+                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" >
                 <span class="invalid-feedback"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
+                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" >
                 <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
             </div>
             <div class="form-group">

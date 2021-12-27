@@ -2,24 +2,16 @@
 // Initialize the session
 session_start();
  
-// Check if the user is already logged in, if yes then redirect him to welcome page
-// if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-//     header("location: base.html");
-//     exit;
-// }
- 
-// Include config file
 require_once "config.php";
  
 $query = "SELECT * FROM obat";
 $getobat = mysqli_query($link, $query);
 $chekk = mysqli_num_rows($getobat);
 
-// Define variables and initialize with empty values
 $firstname = $lastname =  $address =  $kd_obat = $sum = "";
 $firstname_err = $kd_obat_err =  $sum_err = "";
 $status = "belum sukses"; 
-// Processing form data when form is submitted
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
  
     if(empty(trim($_POST["firstname"]))){
@@ -47,7 +39,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $phone = trim($_POST["phone"]);
     }
 
-    // Chech if address is empty
     if(empty(trim($_POST["address"]))){
         $address_err = "Please enter your address.";
     } else{
@@ -81,8 +72,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
          
     }
-    
-    // Close connection
+
     mysqli_close($link);
 }
 ?>
@@ -113,10 +103,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         <div> <a href="#" class="nav_logo"> <span class="material-icons">health_and_safety
             </span> <span class="nav_logo-name">Apotek Sehat</span> </a>
             <div class="nav_list"> <a href="base.html" class="nav_link "> <span class="material-icons">grid_view </span> <span class="nav_name">Dashboard</span> </a> 
-                <a href="med.html" class="nav_link"> 
+                <a href="med.php" class="nav_link"> 
                     <span class="material-icons">medication</span></i> <span class="nav_name">Medicine</span> </a> 
                 <a href="payment.php" class="nav_link active"> 
-                    <span class="material-icons">payments</span> <span class="nav_name">Payment</span> </a> 
+                    <span class="material-icons">payments</span> <span class="nav_name">Orders</span> </a> 
             </div>
         </div> <a href="logout.php" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span class="nav_name">SignOut</span> </a>
       </nav>
